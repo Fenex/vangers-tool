@@ -47,44 +47,31 @@ pub struct Item {
 
 impl Item {
     fn from_prmrow(row: &str) -> Result<Self, ItemParseError> {
+        use ItemParseError::*;
+
         let mut iter = row.split_whitespace();
-        let name = iter.next().ok_or(ItemParseError::Name)?.to_owned();
-        let r#type = iter
-            .next()
-            .and_then(|s| s.parse().ok())
-            .ok_or(ItemParseError::Type)?;
+        let name = iter.next().ok_or(Name)?.to_owned();
+        let r#type = iter.next().and_then(|s| s.parse().ok()).ok_or(Type)?;
 
         let steeler = {
             let full = iter
                 .next()
                 .and_then(|s| s.parse().ok())
-                .ok_or(ItemParseError::SteelerFull)?;
+                .ok_or(SteelerFull)?;
             let empty = iter
                 .next()
                 .and_then(|s| s.parse().ok())
-                .ok_or(ItemParseError::SteelerFull)?;
+                .ok_or(SteelerFull)?;
             SteelerType { full, empty }
         };
 
-        let size = iter
-            .next()
-            .and_then(|s| s.parse().ok())
-            .ok_or(ItemParseError::Size)?;
-        let count = iter
-            .next()
-            .and_then(|s| s.parse().ok())
-            .ok_or(ItemParseError::Count)?;
-        let param1 = iter
-            .next()
-            .and_then(|s| s.parse().ok())
-            .ok_or(ItemParseError::Param1)?;
-        let param2 = iter
-            .next()
-            .and_then(|s| s.parse().ok())
-            .ok_or(ItemParseError::Param2)?;
+        let size = iter.next().and_then(|s| s.parse().ok()).ok_or(Size)?;
+        let count = iter.next().and_then(|s| s.parse().ok()).ok_or(Count)?;
+        let param1 = iter.next().and_then(|s| s.parse().ok()).ok_or(Param1)?;
+        let param2 = iter.next().and_then(|s| s.parse().ok()).ok_or(Param2)?;
 
         if iter.next().is_some() {
-            Err(ItemParseError::UnexpectedAdditionalParameter)?
+            Err(UnexpectedAdditionalParameter)?
         }
 
         Ok(Self {
